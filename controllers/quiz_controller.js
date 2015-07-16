@@ -20,8 +20,8 @@ exports.load = function(req, res, next, quizId){
 exports.index = function(req, res){
 	if(req.query.search){
 		//Busqueda
-		var consulta = req.query.search.replace(/\s/g,'%').replace(/(.*)/,'%$1%');
-		models.Quiz.findAll({where:["pregunta LIKE ?", consulta]})
+		var consulta = req.query.search.replace(/\s/g,'%').replace(/(.*)/,'%$1%').toLowerCase();
+		models.Quiz.findAll({where:["lower(pregunta) LIKE ?", consulta]})
 		.then(function(quizes){
 			console.log('Quizes '+quizes);
 			res.render('quizes/index.ejs', {quizes: quizes});
