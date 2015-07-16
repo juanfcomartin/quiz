@@ -18,9 +18,18 @@ exports.load = function(req, res, next, quizId){
 
 //GET /quizes
 exports.index = function(req, res){
-	models.Quiz.findAll().then(function(quizes){
-		res.render('quizes/index.ejs', {quizes: quizes});
-	});
+	if(req.query.search){
+		//Busqueda
+		var consulta = req.query.search.replace(/\s/g,'%').replace(/(.*)/,'%$1%');
+		models.Quiz.findAll({where:["pregunta LIKE ?", consulta]})
+		.then(function(quizes){
+			console.log(quizes);
+			res.render('quizes/index.ejs', {quizes: quizes});
+		});
+	}else{
+		//Formulario
+		res.render('quizes/index.ejs', {quizes: null});
+	}
 };
 
 // GET /quizes/:id
