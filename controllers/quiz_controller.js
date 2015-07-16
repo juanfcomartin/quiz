@@ -23,7 +23,7 @@ exports.index = function(req, res){
 		var consulta = req.query.search.replace(/\s/g,'%').replace(/(.*)/,'%$1%');
 		models.Quiz.findAll({where:["pregunta LIKE ?", consulta]})
 		.then(function(quizes){
-			console.log(quizes);
+			console.log('Quizes '+quizes);
 			res.render('quizes/index.ejs', {quizes: quizes});
 		});
 	}else{
