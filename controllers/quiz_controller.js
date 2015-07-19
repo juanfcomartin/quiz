@@ -22,13 +22,15 @@ exports.index = function(req, res){
 		//Busqueda
 		var consulta = req.query.search.replace(/\s/g,'%').replace(/(.*)/,'%$1%').toLowerCase();
 		models.Quiz.findAll({where:["lower(pregunta) LIKE ?", consulta]})
-		.then(function(quizes){
-			console.log('Quizes '+quizes);
-			res.render('quizes/index.ejs', {quizes: quizes});
-		});
+			.then(function(quizes){
+				console.log('Quizes '+quizes);
+				res.render('quizes/index.ejs', {quizes: quizes});
+			});
 	}else{
-		//Formulario
-		res.render('quizes/index.ejs', {quizes: null});
+		models.Quiz.findAll()
+			.then(function(quizes){
+				res.render('quizes/index.ejs', {quizes: quizes})
+			});
 	}
 };
 
@@ -43,4 +45,21 @@ exports.answer = function(req, res) {
 		resultado = 'Correcto';
 	}
 	res.render('quizes/answer', {quiz: req.quiz, respuesta: resultado});		
+};
+
+//GET /quizes/new
+exports.new = function(req, res) {
+	var quiz = models.Quiz.build({pregunta: "Pregunta", respuesta: "Respuesta"});
+	res.render('quizes/new', {quiz: quiz});
+};
+
+//GET /quizes/create
+exports.create = function(req, res) {
+	var quiz = models.Quiz.build(req.body.quiz);
+	console.log(quiz);
+	// guarda en DB los campus pregunta y respuesta de quiz
+	quiz.save({fields: ["pregunta","respuesta"]})
+		.then(function(){
+			res.redirect('/quizes');
+		}); // Redirección HTTP (URL relativo) a la lista de preguntas
 };
