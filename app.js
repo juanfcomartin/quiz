@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var partials = require('express-partials');
 var methodOverride = require('method-override');
+var session = require('express-session');
 
 var routes = require('./routes/index');
 // var users = require('./routes/users');
@@ -25,9 +26,22 @@ app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({ extended: false }));
 // Eliminar extended permite usar notación pseudo-JSON para pasar objetos en formularios con POST
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(cookieParser('Quiz 2015')); // Se añade semilla 'Quiz 2015' para cifrar cookie
+app.use(session()); // Instala el middleware session
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+// Helpers dinámicos para el manejo de sesiones
+app.use(function(req, res, next){
+    // guardar path en session.redir para después de login
+    if(!req.path.match(/\/login|\/logout/)){
+        req.session.redir = req.path;
+    }
+    // hacer visible req.session en las vistas
+    res.locals.session = req.session;
+    next();
+});
 
 app.use('/', routes);
 // app.use('/users', users);
