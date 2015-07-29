@@ -43,6 +43,29 @@ app.use(function(req, res, next){
     next();
 });
 
+// Mecanismo de autologout
+app.use(function(req, res, next){
+    if(req.session.user){
+        var ahora = new Date();
+        if(req.session.lastreq){
+            var antes = new Date(req.session.lastreq);
+            if( (ahora.getTime() - req.session.lastreq) > (1000*60*2) ) {
+                delete req.session.user;
+                delete req.session.lastreq;
+                res.redirect('/login');
+            } else {
+                req.session.lastreq = ahora.getTime();
+                next();
+            }
+        } else {
+            req.session.lastreq = ahora.getTime();
+            next();
+        }
+    } else {
+        next();
+    }
+});
+
 app.use('/', routes);
 // app.use('/users', users);
 

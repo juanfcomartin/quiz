@@ -97,7 +97,7 @@ exports.update = function(req, res) {
 };
 
 // DELETE /quizes/:id
-exports.destroy = function(req, res){
+exports.destroy = function(req, res, next){
 	req.quiz
 		.destroy()
 		.then(function(){
